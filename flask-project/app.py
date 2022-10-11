@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import py.makeProject as mp
-
+import py.map_image_from_extent as satellite
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
@@ -35,3 +35,8 @@ def create_file():
 def project_list():
     folder_list = mp.list_folders();
     return jsonify(folder_list)
+
+@app.route("/satellite", methods=['POST'])
+def create_satellite():
+    print(request.form)
+    return satellite.doSatellite(request.form['project'])

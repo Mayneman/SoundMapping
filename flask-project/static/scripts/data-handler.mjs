@@ -11,6 +11,12 @@ $("#lock_name").click(function() {
   });
 
 });
+$("#create_3d").click(function() {
+  console.log($("#project_list")[0].value)
+  $.post("/satellite",{project: $("#project_list")[0].value},function(result){
+    log(result);
+  });
+});
 
 $("#elevation_input").change(function(e) {
     console.log(e);
@@ -94,6 +100,8 @@ function get_project_list(){
     }
   });
 }
+
+
 
 $( document ).ready(function() {
     get_project_list();

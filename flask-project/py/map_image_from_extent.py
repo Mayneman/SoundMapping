@@ -5,6 +5,7 @@ import numpy
 from osgeo import gdal
 from osgeo.gdalconst import GA_ReadOnly
 from osgeo import ogr, osr
+import logging
 
 token = "pk.eyJ1IjoibGV3aXNkdyIsImEiOiJjbDU2ODlhcm0xYmZ5M2NxeDJsdzAwNmd0In0.zc-jmuRlOe4UYiOZx_7YAg"
 
@@ -36,12 +37,13 @@ def getExtentAndCoordniateSystem(file):
 
     return bottom_left, top_right
 
-tif_raster = "resources\TIF\Clipped_Taranaki_16x16.tif"
-bl, tr = getExtentAndCoordniateSystem(tif_raster)
 
-print(bl, tr)
-im = getImage(bl[0], bl[1], tr[0], tr[1])
-f = open('Clipped_Taranaki_16.jpeg', 'wb')
-f.write(im.content)
-print("Image content written successfully.")
-f.close()
+def doSatellite(project):
+    tif_raster = "./projects/" + project + "/elevation.tif"
+    print(tif_raster)
+    bl, tr = getExtentAndCoordniateSystem(tif_raster)
+    im = getImage(bl[0], bl[1], tr[0], tr[1])
+    f = open("./projects/" + project + "/satelitte.jpeg", 'wb')
+    f.write(im.content)
+    f.close()
+    return("Satellite content saved successfully.")
