@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SM</title>
+    <style>@import url("./style.css");</style>
+    <style>@import url("./import.css");</style>
+  </head>
+  <body>
+    <div class="app">
+      <h1>Welcome to Sound Mapping Application</h1>
+      <button onclick="new_project()">Create New Project</button>
+      <button>Open existing project DB.</button>
+    </div>
+    <script>
+      function new_project()
+      {
+          window.location.href = 'import.html';
+          return false;
+      }
+</script>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+{
+    "temp": "20",
+    "humidity": "30",
+    "ambient_vol": "10",
+    "out_weighting": "A",
+    "project_name": "placeholderproject",
+    "elevation_file": "",
+    "extent_file": "",
+    "land_cover_file": "",
+    "sound_src": "C182"
+}

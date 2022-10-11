@@ -1,0 +1,19 @@
+{
+  "name": "finalproject",
+  "version": "1.0.0",
+  "description": "Project of Lewis White for masters in Computer Science",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mayneman/SoundMapping.git"
+  },
+  "author": "Lewis D. White",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Mayneman/SoundMapping/issues"
+  },
+  "homepage": "https://github.com/Mayneman/SoundMapping#readme"
+}
