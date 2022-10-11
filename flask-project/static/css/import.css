@@ -11,14 +11,14 @@
   
   .Title { grid-area: Title; height: 10%; margin-bottom: 10px;}
   .Title h1 {margin-left: 20px;}
+
   .left_options {
     display: grid; 
     grid-template-columns: 1fr 1fr; 
-    grid-template-rows: 1fr 1fr; 
+    grid-template-rows: 1fr; 
     gap: 0px 0px; 
     grid-template-areas: 
-      "file_imports variables"
-      "sound_source variables"; 
+      "file_imports variables";
     grid-area: left_options; 
   }
 
@@ -27,6 +27,11 @@
     outline: 3px solid black; 
     margin-left: 10px;
   }
+  .file_imports { 
+    grid-area: file_imports; 
+    outline: 3px solid black;
+  }
+
   label {
     display: inline-block;
     width: 200px;
@@ -45,13 +50,6 @@
     text-decoration: underline;
   }
   
-  .file_imports { 
-    grid-area: file_imports; 
-    outline: 3px solid black;
-    margin-bottom: 10px;
-  }
-
-  .sound_source { grid-area: sound_source; outline: 3px solid black; }
 
   .left_options input, h4 {
     margin-left: 20px;
@@ -69,6 +67,7 @@
   grid-area: right_options; 
 }
 .logging_area { grid-area: logging_area;  outline: 3px solid black; margin-top: 10px; margin-left: 10px;}
+
 .logging_area textarea{
   width: 90%;
   height: 75%;
@@ -80,4 +79,5 @@
 
 .controls button {
   margin-left: 20px;
+  margin-bottom: 20px;
 }

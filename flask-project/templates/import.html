@@ -15,57 +15,48 @@
     <div class="container" style="height: 95vh;">
       <div class="Title"><h1>Creating Project...</h1></div>
       <div class="left_options">
+        <div class="file_imports">
+            <h3>New Project Name</h3>
+            <input type="text" id="project_name" value=""/>
+            <button id="lock_name">Start</button>
+            <h3>Choose Existing Project</h3>
+            <select id="project_list">
+            </select>
+            <h3>Files</h3>
+            <h4>Elevation File</h4>
+            <input type="file" id="elevation_input" name="avatar" accept=".tif">
+            <span id="elevation_confirm">❌</span>
+            <div class="tooltip">Ⓘ
+              <span class="tooltiptext">.tif file with elevation data for project area. Will be displayed in full when viewing.</span>
+            </div>
+            <h4>Extent Shape File</h4>
+            <input type="file" id="extent_input" name="avatar" accept=".shp">
+            <span id="extent_confirm" >❌</span>
+            <div class="tooltip">Ⓘ
+              <span class="tooltiptext">.shp file. With extent for sound modelling calculations. Same or smaller area than elevation file.</span>
+            </div>
+            <h4>Land Cover (.tif)</h4>
+            <input type="file" id="land_cover_input" name="avatar" accept=".tif">
+            <span id="land_cover_confirm" >❌</span>
+            <div class="tooltip">Ⓘ
+              <span class="tooltiptext">.tif file. Land cover with NLCD codes.s</span>
+            </div>
+        </div>
         <div class="variables">
           <h3>Variables</h3>
           <label>Temperature (°C)</label>
           <input type="number" id="temperature" value="20"/>
-
           <label>Humidity (%)</label>
           <input type="number" id="humidity" value="30"/>
-
           <label>Ambient Volume (dBA)</label>
           <input type="number" id="ambient" value="10"/>
-
           <label>Output Weighting</label>
           <select id="out_weighting">
             <option value="A">A-weighting</option>
             <option value="C">C-weighting</option>
             <option value="Z">Z-weighting</option>
           </select>
-        </div>
-        <div class="file_imports">
-          <div>
-            <h3>Project Name</h3>
-            <input type="text" id="project_name" value="placeholderproject"/>
-            <button id="lock_name">Start</button>
-            <h3>Files</h3>
-            <h4>Elevation File</h4>
-            <input type="file" id="elevation_input" name="avatar" accept=".tif">
-            <span id="elevation_confirm" style="color: green; ">❌</span>
-            <div class="tooltip">Ⓘ
-              <span class="tooltiptext">.tif file with elevation data for project area. Will be displayed in full when viewing.</span>
-            </div>
-          </div>
-        
-          <div>
-            <h4>Extent Shape File</h4>
-            <input type="file" id="extent_input" name="avatar" accept=".shp">
-            <span id="extent_confirm" style="color: green; ">❌</span>
-            <div class="tooltip">Ⓘ
-              <span class="tooltiptext">.shp file. With extent for sound modelling calculations. Same or smaller area than elevation file.</span>
-            </div>
-          </div>
-  
-          <div>
-            <h4>Land Cover (.tif)</h4>
-            <input type="file" id="land_cover_input" name="avatar" accept=".tif">
-            <span id="land_cover_confirm" style="color: green; ">❌</span>
-            <div class="tooltip">Ⓘ
-              <span class="tooltiptext">.tif file. Land cover with NLCD codes.s</span>
-            </div>
-          </div>
-        </div>
-        <div class="sound_source">
+          <br>
           <h3>Sound Source</h3>
           <label>Sound Source Type</label>
           <select id="vehicle_type">
@@ -81,7 +72,10 @@
       <div class="right_options">
         <div class="controls">
           <h3>Controls</h3>
-          <button id="submit_imports" disabled>Send Data</button>
+          <button id="submit_imports" disabled>Create</button>
+          <span hidden id="import_success">✔️</span>
+          <br>
+          <button id="create_3d" disabled>Make 3D Mesh</button>
         </div>
         <div class="logging_area">
           <h3>Logs</h3>

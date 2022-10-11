@@ -5,10 +5,11 @@ let extent_tmp = "";
 let land_cover_tmp = "";
 
 $("#lock_name").click(function() {
-  $("#project_name")[0].value;
   $.post("/create",{name: $("#project_name")[0].value},function(result){
     log(result);
+    get_project_list();
   });
+
 });
 
 $("#elevation_input").change(function(e) {
@@ -65,7 +66,8 @@ $("#submit_imports").click(function () {
   formData.append('extent', $("#extent_input")[0].files[0]);
   formData.append('land_cover', $("#land_cover_input")[0].files[0]);
   formData.append('config', config_json);
-  console.log(formData.get('elevation'));
+  formData.append('project', $("#project_list")[0].value);
+  console.log($("#project_list")[0].value);
 
   $.ajax({
     type: 'POST',
@@ -74,11 +76,26 @@ $("#submit_imports").click(function () {
     processData: false,
     contentType: false,
     success: function(data) {
-      console.log(data)
       log(data);
+      $("#import_success")[0].hidden = false;
     }
 }, );
   console.log("Posted");
   });
 
+function get_project_list(){
+  $.post('/projects',function(data) {
+    $('#project_list')[0].innerHTML = "";
+    for (var i = 0; i < data.length; i++) {
+      $('#project_list').append($('<option>', { 
+        value: data[i],
+        text : data[i]
+    }));
+    }
+  });
+}
+
+$( document ).ready(function() {
+    get_project_list();
+});
 

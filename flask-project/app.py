@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import py.makeProject as mp
+
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
@@ -29,3 +30,8 @@ def create_proj():
 @app.route("/files", methods=['POST'])
 def create_file():
     return mp.make_file(request.form['name'])
+
+@app.route("/projects", methods=['POST'])
+def project_list():
+    folder_list = mp.list_folders();
+    return jsonify(folder_list)
