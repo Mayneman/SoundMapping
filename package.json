@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Mayneman/SoundMapping/issues"
   },
-  "homepage": "https://github.com/Mayneman/SoundMapping#readme"
+  "homepage": "https://github.com/Mayneman/SoundMapping#readme",
+  "dependencies": {
+    "three": "^0.145.0"
+  }
 }

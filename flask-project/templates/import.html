@@ -16,10 +16,10 @@
       <div class="Title"><h1>Creating Project...</h1></div>
       <div class="left_options">
         <div class="file_imports">
-            <h3>New Project Name</h3>
+            <h3>Create Project</h3>
             <input type="text" id="project_name" value=""/>
-            <button id="lock_name">Start</button>
-            <h3>Choose Existing Project</h3>
+            <button id="lock_name">Make</button>
+            <h3>Choose Project</h3>
             <select id="project_list">
             </select>
             <h3>Files</h3>
@@ -75,7 +75,10 @@
           <button id="submit_imports" disabled>Create</button>
           <span hidden id="import_success">✔️</span>
           <br>
-          <button id="create_3d">Make 3D Mesh</button>
+          <button id="create_sat">Get Satellite Image</button>
+          <button id="create_mesh">Make 3D Mesh</button>
+          <h3>View</h3>
+          <button onclick="location.href = 'viewer?project=' + $('#project_list')[0].value">To Viewer</button>
         </div>
         <div class="logging_area">
           <h3>Logs</h3>

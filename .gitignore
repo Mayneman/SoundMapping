@@ -1,4 +1,5 @@
 flask-project/venv
 **/__pycache__
+**/node_modules
 flask-project/app.bat
 flask-project/projects

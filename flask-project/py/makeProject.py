@@ -4,7 +4,7 @@ from pathlib import Path
 import requests
 from flask import request
 
-base_proj_dir = "./projects/"
+base_proj_dir = ".static/projects/"
 
 def make_proj(data):
     project_dir = base_proj_dir + data.form['project']
@@ -27,12 +27,9 @@ def make_folder(name):
     Path(base_proj_dir).mkdir(parents=True, exist_ok=True)
     return "Folder " + name +  " created successfully."
 
-def make_file(name):
-    base_proj_dir = "./projects/" + name
-
 def list_folders():
     folder_list = []
-    for file in os.listdir("./projects"):
-        if os.path.isdir("./projects/" + file):
+    for file in os.listdir(base_proj_dir):
+        if os.path.isdir(base_proj_dir + file):
             folder_list.append(file)
     return folder_list 

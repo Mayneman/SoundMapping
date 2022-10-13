@@ -11,12 +11,21 @@ $("#lock_name").click(function() {
   });
 
 });
-$("#create_3d").click(function() {
+
+$("#create_sat").click(function() {
   console.log($("#project_list")[0].value)
   $.post("/satellite",{project: $("#project_list")[0].value},function(result){
     log(result);
   });
 });
+
+$("#create_mesh").click(function() {
+  console.log($("#project_list")[0].value)
+  $.post("/mesh",{project: $("#project_list")[0].value},function(result){
+    log(result);
+  });
+});
+
 
 $("#elevation_input").change(function(e) {
     console.log(e);

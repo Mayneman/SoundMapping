@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import py.makeProject as mp
 import py.map_image_from_extent as satellite
+import py.phstl as mesh
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
@@ -12,15 +13,11 @@ def home_page():
 def import_page():
     if request.method == 'GET':
         return render_template('import.html')
-    if request.method == 'POST':
-        mp.make_proj(request)
-        print(request.files.getlist('file'))
-        print(request.files)
-        print(request.form)
-        # Call project maker with these settings.
-        # Satelitte images.
-        # Run script and check ArcGIS License.
-        return "Successful POST of import data."
+
+@app.route("/viewer")
+def view_page():
+    if request.method =='GET':
+        return render_template('viewer.html')
 
 @app.route("/create", methods=['POST'])
 def create_proj():
@@ -40,3 +37,10 @@ def project_list():
 def create_satellite():
     print(request.form)
     return satellite.doSatellite(request.form['project'])
+
+@app.route("/mesh", methods=['POST'])
+def create_mesh():
+    print(request.form)
+    elevation_location = "./projects/" + request.form['project'] + "/elevation.tif "
+    stl_out = "./projects/" + request.form['project'] + "/mesh.stl"
+    return mesh.make_mesh(elevation_location, stl_out)
