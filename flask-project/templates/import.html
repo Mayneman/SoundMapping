@@ -41,6 +41,12 @@
             <div class="tooltip">Ⓘ
               <span class="tooltiptext">.tif file. Land cover with NLCD codes.s</span>
             </div>
+            <h4>Point Sources (.shp)</h4>
+            <input type="file" id="point_src_input" name="avatar" accept=".shp">
+            <span id="point_src_confirm" >❌</span>
+            <div class="tooltip">Ⓘ
+              <span class="tooltiptext">Shape file with positions of vehicle to be modelled in order.</span>
+            </div>
         </div>
         <div class="variables">
           <h3>Variables</h3>
@@ -60,21 +66,19 @@
           <h3>Sound Source</h3>
           <label>Sound Source Type</label>
           <select id="vehicle_type">
-            <option>Winged Aircraft</option>
-            <option>Helicopters</option>
           </select>
           <label>Model</label>
           <select id="vehicle_model">
-            <option>C182</option>
           </select>
         </div>
       </div>
       <div class="right_options">
         <div class="controls">
           <h3>Controls</h3>
-          <button id="submit_imports" disabled>Create</button>
+          <button id="submit_imports" disabled>Import Files</button>
           <span hidden id="import_success">✔️</span>
           <br>
+          <button id="run_model">Simulate Sound Propagation</button>
           <button id="create_sat">Get Satellite Image</button>
           <button id="create_mesh">Make 3D Mesh</button>
           <h3>View</h3>

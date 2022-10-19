@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xml:lang="en"><Esri><CreaDate>20220707</CreaDate><CreaTime>13275100</CreaTime><ArcGISFormat>1.0</ArcGISFormat><SyncOnce>TRUE</SyncOnce><DataProperties><lineage><Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\AddField" Date="20220707" Time="132751">AddField D:/_AtHome/IN/Landcover_Taranaki_Clipped.tif NMSIMTYPE Text # # # # NULLABLE NON_REQUIRED #</Process><Process ToolSource="c:\program files\arcgis\pro\Resources\ArcToolbox\toolboxes\Data Management Tools.tbx\CalculateField" Date="20220707" Time="132751">CalculateField D:/_AtHome/IN/Landcover_Taranaki_Clipped.tif NMSIMTYPE calcNLCD(!VALUE!) PYTHON "def calcNLCD(x):
+                newval = "" 
+                if x == 1:
+                    newval = "AK"
+                if x == 11:
+                    newval = "WATER"
+                if x == 12:
+                    newval = "SNOW"
+                if x == 21:
+                    newval = "URBAN1"
+                if x == 22:
+                    newval = "URBAN2"
+                if x == 23:
+                    newval = "URBAN3"
+                if x == 24:
+                    newval = "URBAN4"
+                if x == 31:
+                    newval = "BARREN"
+                if x == 32:
+                    newval = "SHORE"
+                if x == 41 or x == 42 or x == 43:
+                    newval = "FOREST"
+                if x == 51 or x == 52:
+                    newval = "SHRUB"
+                if x == 71 or x == 72 or x == 81 or x == 82:
+                    newval = "GRASS_HERB"
+                if x == 73:
+                    newval = "LICHEN"
+                if x == 74:
+                    newval = "MOSS"
+                if x &gt;= 90:
+                    newval = "WETLAND"
+                return(newval)" Text</Process></lineage></DataProperties></Esri></metadata>
