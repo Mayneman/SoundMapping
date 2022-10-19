@@ -1,5 +1,5 @@
-flask-project/venv
+flsk/venv
 **/__pycache__
 **/node_modules
-flask-project/app.bat
-flask-project/projects
+flsk/app.bat
+flsk/projects
