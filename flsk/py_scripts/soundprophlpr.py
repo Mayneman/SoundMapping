@@ -39,7 +39,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 # Import required modules once at start of file
 import sys, os, shutil, math, subprocess
 import arcpy, arcpy.sa
-from . import nmsimhlpr
+try:
+    import py_scripts.nmsimhlpr
+except ModuleNotFoundError:
+        import nmsimhlpr
 
 # Check out the spatial analyst extension
 arcpy.CheckOutExtension("Spatial")
@@ -60,6 +63,14 @@ def SoundPropagation(model, point_source_file, source_id_field, Model_Extent,
                      truncate = 0, landcover_type = "nlcd", is_GUI = "NO",
                      use_old_barrier = 1, allow_defaults = "YES"):
     # ambient_path = "NA" bypasses comparisons to the ambient environment
+    print("model",model)
+    print("point_source_file", point_source_file)
+    print("source_id_field", source_id_field)
+    print("ambient_path", ambient_path)
+    print("elevation", elevation)
+    print("landcover", landcover)
+    print("base_dir", base_dir)
+    print("results_dir", results_dir)
 
     # Check that the base_dir does not exceed the ESRI limit. If it does, throw an error and request the user to use a shorter file path name
     #**# In the long run, convert the intermediates to .tif to increase or eliminate this limitation!
@@ -76,8 +87,11 @@ def SoundPropagation(model, point_source_file, source_id_field, Model_Extent,
     CellSize = dscRD.MeanCellHeight
 
     # Set Environment settings # Now set here for all tools instead of in each tool.
-    arcpy.env.extent = Model_Extent #RasterExtent
+    print(arcpy.GetInstallInfo()['Version'])
+    
+    # print(arcpy.Raster(elevation))
     arcpy.env.cellSize = CellSize
+    arcpy.env.extent = Model_Extent #RasterExtent
     arcpy.env.snapRaster = arcpy.Raster(elevation)
 
     # Set up timing for analysis. If timelog == "none" no timing will be performed
@@ -199,7 +213,7 @@ def SoundPropagation(model, point_source_file, source_id_field, Model_Extent,
                 
                 # Only run if intermediate files are desired
                 if keep_intermediates == 1:
-                    excess_freq_dir = model_dir + "frequency_excess/"
+                    excess_freq_dir = model_dir + "frequency_excess\\"
                     make(excess_freq_dir)
                     compute_excess_by_freqs(point_dir, excess_freq_dir, freq_lst, freq_fill, ambient_path, model, point_id)
 
@@ -3460,29 +3474,6 @@ def check_path_length(base_dir):
         e4 = "restricting the longest path length you can input here to %s characters. " % (len_limit)
         e5 = "your chosen path has %s characters." % (len(base_dir))
         raise ValueError("%s%s%s%s%s" % (e1,e2,e3,e4,e5))
-
-
-# Function to facilitate the creation of many square extents. This function
-# only makes one extent, but placed within a loop, it can create many exents
-# Note the dependency on R!
-def make_extent(R_exe, tbx_root, source_point, point_dir, extent_size, extent_file, utm_zone):
-    R_script = tbx_root + "scripts/make_extents.R"
-    
-    # THIS ASSUMES THERE IS ONLY ONE SOURCE POINT IN THE SOURCE POINT FILE
-    buffer_size = int(math.ceil(extent_size / 2.0)) # Divide extent size in half
-    with arcpy.da.SearchCursor(source_point, ["SHAPE@XY"]) as cursor:
-        count = 0
-        for row in cursor:
-            X, Y = row[0]   
-            count += 1
-            
-    if count != 1:
-        raise ValueError("The source point shapefile (%s) must have only one point in it" % source_point )
-
-    args = "%s %s %s %s %s" % (X, Y, buffer_size, extent_file, utm_zone)
-    command = "%s %s %s" % (R_exe, R_script, args)    
-    subprocess.call(command)
-
 
 def get_extent(file):
     extent = arcpy.Describe(file).extent

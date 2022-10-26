@@ -39,44 +39,42 @@ Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # Import system module
 import sys, ntpath
-from . import soundprophlpr as sp
 import arcpy
 import os
+try:
+    import soundprophlpr as sp
+except ImportError:
+    import py_scripts.soundprophlpr as sp
+
 
 def main_nmsimgis(in_dict):
-    root_folder = os.getcwd() + "\\static\\" + in_dict['project']
-    print(root_folder)
+    root_folder = os.path.abspath(os.getcwd()) + "\\static\\projects\\" + in_dict['project']
+    tbx_root = os.path.abspath(os.getcwd())
     # Input parameters (optional parameters will come in as '#' if left blank)
     model = "nmsimgis"
-    results_dir = root_folder + "\\out"
     # Files
     point_source_file = root_folder + "\\point_src.shp"
-    model_extent = root_folder + "\\extent.shp"
+    model_extent = sp.get_extent(root_folder + "\\extent.shp")
     elevation = root_folder + "\\elevation.tif"
     land_cover = root_folder + "\\land_cover.tif"
     src_file =  os.getcwd() + "\\static\\resources\\sound_source\\" + in_dict['sound_src']
-    print(src_file)
 
     results_label = ntpath.basename(point_source_file)[:-4]
     # Basic Variables
-    source_id_field = 'FID'
+    source_id_field = "FID"
     temp = in_dict['temp']
     rh = in_dict['humidity']
-    ambient = in_dict['ambient_vol']
+    ambient = 'NA'
+    drop_down_weight = in_dict['out_weighting']
     receiver_offset = 1
     allow_defaults = 'YES'
     summarize_string = 'frequencies only'
     summarize = sp.unpack_summary(summarize_string)
-    keep_intermediates = 'NO'
-    drop_down_weight = in_dict['out_weighting']
-    print(point_source_file)
-    print(model_extent)
-    print(elevation)
-    print(land_cover)
-    print(src_file)
+    keep_intermediates = 0
     # Correct for ArcGIS's path import practices
-    root_folder = root_folder + "\\"
-    model_dir = root_folder + "\\"
+    root_folder = root_folder + '\\'
+    model_dir = root_folder
+    results_dir = root_folder + 'nmsimgis\\'
 
     # Add extra variable that does not apply
     timelog = "none"
@@ -108,7 +106,7 @@ def main_nmsimgis(in_dict):
                         model_extent, ambient, elevation, land_cover, temp, rh,
                         wind_dir, wind_sp, seas_cond, model_dir, results_dir,
                         results_label, src_file,
-                        receiver_offset, n_points, root_folder, timelog,
+                        receiver_offset, n_points, tbx_root, timelog,
                         summarize=summarize,
                         keep_intermediates=keep_intermediates,
                         weighting=weighting, truncate=truncate,
@@ -117,23 +115,7 @@ def main_nmsimgis(in_dict):
 
 #  FOR TESTING
 if __name__ == "__main__":
-    in_dict = {'tbx_root': 'G:/_PROJECTS/_University/SoundTools/NMSIM/Resources'}
-
-    in_dict['point_source_file'] = in_dict['tbx_root'] + '/Taranaki/Taranaki_3pt_SS.shp'
-    results_label = ntpath.basename(in_dict['point_source_file'])[:-4]
-    in_dict['source_id_field'] = 'FID'
-    extent_file = in_dict['tbx_root'] + '/Taranaki_Files/Taranaki Outline.shp'
-    in_dict['model_extent'] = sp.get_extent(extent_file)
-    in_dict['elevation'] = in_dict['tbx_root'] + '/Taranaki/Clipped_Taranaki_16x16.tif'
-    in_dict['land_cover'] = in_dict['tbx_root'] + '/Taranaki/Landcover_Taranaki_Clipped.tif'
-    in_dict['srcfile'] = in_dict['tbx_root'] + '/Taranaki/AS350.src'  # Full path to the source file
-    in_dict['temp'] = 15
-    in_dict['rh'] = 50
-    in_dict['receiver_offset'] = 1
-    in_dict['allow_defaults'] = 'YES'
-    in_dict['summarize_string'] = 'frequencies only'
-    in_dict['ambient'] = 0
-    in_dict['keep_intermediates'] = 0
-    in_dict['drop_down_weight'] = 'A'
-
+    print("I AM SUBPROCESS")
+    print(sys.argv)
+    in_dict = {'tbx_root': '\\', 'project': sys.argv[1], 'sound_src': sys.argv[2], 'temp': sys.argv[3], 'humidity': sys.argv[4], 'out_weighting': sys.argv[5]}
     main_nmsimgis(in_dict)

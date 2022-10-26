@@ -3,3 +3,4 @@ flsk/venv
 **/node_modules
 flsk/app.bat
 flsk/projects
+**/projects

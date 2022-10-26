@@ -29,8 +29,8 @@
             <div class="tooltip">Ⓘ
               <span class="tooltiptext">.tif file with elevation data for project area. Will be displayed in full when viewing.</span>
             </div>
-            <h4>Extent Shape File</h4>
-            <input type="file" id="extent_input" name="avatar" accept=".shp">
+            <h4>Extent Shape File (Select all .shp,.shx,.dbf,.prj)</h4>
+            <input type="file" id="extent_input" name="avatar" accept=".shp,.shx,.dbf,.prj" multiple="multiple">
             <span id="extent_confirm" >❌</span>
             <div class="tooltip">Ⓘ
               <span class="tooltiptext">.shp file. With extent for sound modelling calculations. Same or smaller area than elevation file.</span>
@@ -41,8 +41,8 @@
             <div class="tooltip">Ⓘ
               <span class="tooltiptext">.tif file. Land cover with NLCD codes.s</span>
             </div>
-            <h4>Point Sources (.shp)</h4>
-            <input type="file" id="point_src_input" name="avatar" accept=".shp">
+            <h4>Point Sources (Select all .shp .shx .dbf .prj)</h4>
+            <input type="file" id="point_src_input" name="avatar" accept=".shp, .shx, .dbf, .prj" multiple="multiple">
             <span id="point_src_confirm" >❌</span>
             <div class="tooltip">Ⓘ
               <span class="tooltiptext">Shape file with positions of vehicle to be modelled in order.</span>
@@ -54,8 +54,6 @@
           <input type="number" id="temperature" value="20"/>
           <label>Humidity (%)</label>
           <input type="number" id="humidity" value="30"/>
-          <label>Ambient Volume (dBA)</label>
-          <input type="number" id="ambient" value="10"/>
           <label>Output Weighting</label>
           <select id="out_weighting">
             <option value="A">A-weighting</option>

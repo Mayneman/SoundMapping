@@ -16,18 +16,22 @@ def make_proj(data):
     if data.files['elevation'].filename != '':
         data.files['elevation'].save(project_dir + "/elevation.tif")
     # EXTENT
-    if data.files['extent'].filename != '':
-        data.files['extent'].save(project_dir + "/extent.shp")
+    data.files['extent.shp'].save(project_dir + "/extent.shp")
+    data.files['extent.shx'].save(project_dir + "/extent.shx")
+    data.files['extent.dbf'].save(project_dir + "/extent.dbf")
+    data.files['extent.prj'].save(project_dir + "/extent.prj")
     # COVER
     if data.files['land_cover'].filename != '':
         data.files['land_cover'].save(project_dir + "/land_cover.tif")
     # POINT SOURCES
-    if data.files['point_src'].filename != '':
-        data.files['point_src'].save(project_dir + "/point_src.shp")
+    data.files['point_src.shp'].save(project_dir + "/point_src.shp")
+    data.files['point_src.shx'].save(project_dir + "/point_src.shx")
+    data.files['point_src.dbf'].save(project_dir + "/point_src.dbf")
+    data.files['point_src.prj'].save(project_dir + "/point_src.prj")
     return "OK"
 
 def make_folder(name):
-    Path(base_proj_dir).mkdir(parents=True, exist_ok=True)
+    Path(base_proj_dir + "/" + name).mkdir(parents=True, exist_ok=True)
     return "Folder " + name +  " created successfully."
 
 def list_folders():

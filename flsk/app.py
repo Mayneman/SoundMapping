@@ -3,8 +3,12 @@ from py_scripts import makeProject as mp
 from py_scripts import map_image_from_extent as satellite
 from py_scripts import phstl as mesh
 from py_scripts import D_nmsimgis as sound_modeller
+import subprocess
+
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+latest_info_list = []
 
 @app.route("/")
 def home_page():
@@ -62,11 +66,20 @@ def run_model():
     in_dict['sound_src'] = request.form['vehicle'] + "\\" + request.form['sound_src'] # Full path to the source file
     in_dict['temp'] = request.form['temp']
     in_dict['humidity'] = request.form['humidity']
-    in_dict['receiver_offset'] = 1
-    in_dict['allow_defaults'] = 'YES'
-    in_dict['summarize_string'] = 'frequencies only'
-    in_dict['ambient_vol'] = request.form['ambient_vol']
-    in_dict['keep_intermediates'] = 0
     in_dict['out_weighting'] = request.form['out_weighting']
-    sound_modeller.main_nmsimgis(in_dict)
-    return ""
+    # sound_modeller.main_nmsimgis(in_dict)
+    p = subprocess.Popen(['python', 'py_scripts\\D_nmsimgis.py', project_name, in_dict['sound_src'], in_dict['temp'], in_dict['humidity'], in_dict['out_weighting']], stdout=subprocess.PIPE)
+    for stdout_line in iter(p.stdout.readline, ""):
+        print(stdout_line.decode("utf-8"))
+        global latest_info_list
+        latest_info_list.append(stdout_line.decode("utf-8"))
+        if(stdout_line.decode("utf-8") == ""):
+            break
+    return "1"
+
+@app.route("/latest_info")
+def latest_info():
+    global latest_info_list
+    copy_of_list = latest_info_list.copy()
+    latest_info_list = []
+    return jsonify(copy_of_list)

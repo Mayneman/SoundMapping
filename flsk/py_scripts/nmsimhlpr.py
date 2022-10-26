@@ -38,12 +38,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 # Import modules & ArcGIS settings
 #import multiprocessing # Import multiprocessing package for running nmsimgis
-import sys, os, numpy, copy, ctypes, math, subprocess
+import os, numpy, copy, ctypes, math, subprocess
 import  pickle
 from ctypes import cdll
 import arcpy
 import arcpy.sa
-from . import soundprophlpr
+try:
+    import soundprophlpr
+except ModuleNotFoundError:
+    import py_scripts.soundprophlpr
 arcpy.env.overwriteOutput = True # Make this a setting for all processes
 arcpy.CheckOutExtension("Spatial") # Check out the spatial analyst extension
 arcpy.env.addOutputsToMap = False  # Prevent intermediates from being added to the map mid-processing #**# Doesn't work
@@ -72,7 +75,7 @@ def nmsimgis_setup(model_dir, point_dir, freq_dir, Sound_Source, dem_clip, land_
     # Set up inputs
     #from nmsimhlpr import * # For testing purposes    
     #freq = freq_lst # For testing purposes
-    nmsim_dll = tbx_root + "NMSim_Libraries64.dll"
+    nmsim_dll = tbx_root + "\\py_scripts\\NMSim_Libraries64.dll"
         
     # Source comes in as a source point from a shapefile
     #Sound_Source = "C:/SPreAD-GIS/csu/data/update_ms/spreadgis/outputs\source_point.shp"
@@ -167,46 +170,9 @@ def nmsimgis_setup(model_dir, point_dir, freq_dir, Sound_Source, dem_clip, land_
 
     for p in range(n_chunks):
 
-        # Set up run inputs
-        #temp_text = point_dir + "temp_text.txt"
-        #args_text = point_dir + "args_text.txt" # To contain arguments with spaces in the name that interfere with the function call
-        in_pickle = point_dir + "in_pickle_%s.p" % p
-        
-        # Set up subprocess.call
-        out_pickle = point_dir + "out_pickle_%s.p" % p
-        nmsimgis_analysis_py = "%s/Scripts/nmsimgis_analysis.py" % tbx_root
-        args1 = [p, n_chunks, chunk_paths, col_remainder, row_remainder, col_subset_start, row_subset_start, freq, numpy_dem, numpy_impedance]
-        args2 = [source_info, temp, rh, receiver_offset, model_dir, point_dir, dem_name, xyzsrc, zsrc] #, lowerleft] #lowerleft is unpicklable - need to re-create it!
-        args3 = [dem_clip, point_id, point_fill, freq_fill, keep_intermediates, n_processes, nmsim_dll, cell_x, cell_y, xmin]
-        args4 = [xmax, ymin, ymax, no_extent_settings, do_timing, my_times, my_time_labels, model, out_pickle]
-        args = args1 + args2 + args3 + args4
-        pickle.dump(args, open(in_pickle, 'wb'))
-        
-        commands = "python %s %s" % (nmsimgis_analysis_py, in_pickle)
-        print(commands)
-        test = subprocess.Popen(commands, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-        output, error_output = test.communicate()
-        print(output)
-        print(error_output)
-        if error_output != "":
-            raise ValueError(error_output.decode("utf-8"))
-            
-        arcpy.AddMessage("p = %s" % p)
-
-        # Provide a more intuitive error message if this step fails #**# Ideally, you could pipe the error message from subprocess call, or at least write an error log.
-            # read in values that were pickled
-        pickle_out = pickle.load(open(out_pickle, 'rb') ) # outpickle is defined later & will be defined by this point in the loop.
-            #except:
-                #raise ValueError("Something went wrong during the analysis (line 183 in nmsimhlpr.py; subprocess.call function)")
-            
-        chunk_paths = pickle_out[0]
-        col_remainder = pickle_out[1]
-        row_remainder = pickle_out[2]
-        col_subset_start = pickle_out[3]
-        row_subset_start = pickle_out[4]
-        my_times = pickle_out[5]
-        my_time_labels = pickle_out[6]
-    
+        chunk_paths, col_remainder, row_remainder, col_subset_start, row_subset_start, my_times, my_time_labels = nmsimgis_analysis(p, n_chunks, chunk_paths, col_remainder, row_remainder, col_subset_start, row_subset_start, freq, numpy_dem, numpy_impedance,
+        source_info, temp, rh, receiver_offset, model_dir, point_dir, dem_name, xyzsrc, zsrc, dem_clip, point_id, point_fill, freq_fill, keep_intermediates, n_processes, nmsim_dll, cell_x, cell_y, xmin,
+        xmax, ymin, ymax, no_extent_settings, do_timing, my_times, my_time_labels, model)
 
     # if only one run, then no need to remerge
     if p != 0:
@@ -317,17 +283,6 @@ def nmsimgis_analysis(p, n_chunks, chunk_paths, col_remainder, row_remainder, co
             if model == "nmsimgis":
             
                 core_out = nmsimgis_core(xyzsrc_cell, xyzrec_cell, cell_x, cell_y, zsrc, zrec, head, roll, pitch,
-                                         vel, engpow, srcfile, temp, rh, npts, max_dist,
-                                         dist_vec, hgt_vec, imp_vec, freq, nfreq, nmsim_dll, point_dir)
-
-            if model == "iso9613":
-                if n == 0 and m == 0:
-                    arcpy.AddWarning("Assuming down-wind propagation")    
-                    arcpy.AddWarning("Assuming single refraction") 
-                    arcpy.AddWarning("Section 7.5 Reflections was omitted from the calculations")
-                    arcpy.AddMessage("Annex A (Foliage, Industrial Sites, and Housing) was omitted from the calculations")
-
-                core_out = iso_core(xyzsrc_cell, xyzrec_cell, cell_x, cell_y, zsrc, zrec, head, roll, pitch,
                                          vel, engpow, srcfile, temp, rh, npts, max_dist,
                                          dist_vec, hgt_vec, imp_vec, freq, nfreq, nmsim_dll, point_dir)
                 
@@ -578,18 +533,11 @@ def nmsimgis_core(xyzsrc_cell, xyzrec_cell, cell_x, cell_y, zsrc, zrec, head, ro
                   srcfile, temp, rh, npts, max_dist, dist_vec, hgt_vec,
                   imp_vec, freq, nfreq, nmsim_dll, point_dir, ambient_vals = ["none"]):
 
-    # for testing purposes
-    #testing = 1
-    #temp = temp_s
-    #rh = hum_s
-    #xyz_rec = xyzrec_cell
-    #srcfile
-
     import math
     temp = float(temp) # needs to be in float format
     rh = float(rh) # Needs to be in float format
-    freq = map(float, freq) # Convert list to float format
-
+    freq = [float(i) for i in freq] # Convert list to float format
+ 
     #Reconvert xyzsrc and xyzrec from cell units to m
     xsrc_m = xyzsrc_cell[0] * cell_x
     ysrc_m = xyzsrc_cell[1] * cell_y
@@ -613,10 +561,10 @@ def nmsimgis_core(xyzsrc_cell, xyzrec_cell, cell_x, cell_y, zsrc, zrec, head, ro
     
     # Evaluate sound propagation based on terrain, impedance, source height,
     # and receiver height
+
     attenuation = NMSim_propagation(nmsim_dll, zsrc, zrec, npts,
                                               dist_vec, hgt_vec, imp_vec, freq,
                                               nfreq)
-    
     # Add spherical spreading loss (this is even across frequencies)    
     if distance_out == 0:
         distance_out = 1 # Switch to 1 m distance if the source point is exactly on the midpoint of the cell of origin
@@ -630,7 +578,7 @@ def nmsimgis_core(xyzsrc_cell, xyzrec_cell, cell_x, cell_y, zsrc, zrec, head, ro
         this_source_level = dbband_out[i]
         this_atmoabs = absorption[i]
         this_attenuation = attenuation[i]
-    
+        #TODO
         db_out = this_source_level - this_atmoabs - this_attenuation - spherical_spreading_loss
 
         # Cap out extreme negative values to avoid code crashes
@@ -1122,7 +1070,6 @@ def extract_values(in_array, x_coords, y_coords, extract_type = "BILINEAR"): #BI
 # NOTE: This uses an inverted coordinate system for y (relative to the above), because of the row/column orientation
 def do_bilinear_interpolation(in_array, xcoord, ycoord):
     import math
-    print("do bilinear interpolation")
     # Get coordinates of upper left corner
     j = int(math.floor(xcoord))
     i = int(math.floor(ycoord))
@@ -1357,12 +1304,11 @@ def make_transect_points(xyzsrc, xyzrec, npts, point_dir, coord_system, my_times
 
     return(transect_points)
 
-
+# TODO 
 # Call NMSim propagation algorithm
 def NMSim_propagation(nmsim_dll, zsrc, zrec, npts, dist_vec, hgt_vec, imp_vec,
                       freq, nfreq):
     nmsim = cdll.LoadLibrary(nmsim_dll) 
-    
     #Load the data into the ctype variables
     npts_c = ctypes.c_int8(npts)  #Number of distances
     dist_c = (ctypes.c_float * npts)(*dist_vec)
@@ -1372,15 +1318,13 @@ def NMSim_propagation(nmsim_dll, zsrc, zrec, npts, dist_vec, hgt_vec, imp_vec,
     nfreq_c = ctypes.c_int8(nfreq)
     zsrc_c = ctypes.c_float(zsrc)
     zrec_c = ctypes.c_float(zrec)
-    
+
     dummy = [0] * nfreq
     #Output
     attbnd = (ctypes.c_float * nfreq)(*dummy)
-    
     #Call to NMSim routine ONECUT
     nmsim.ONECUT(attbnd, ctypes.byref(npts_c), dist_c, hgt_c, imp_c, ctypes.byref(zsrc_c), ctypes.byref(zrec_c), ctypes.byref(nfreq_c),
                  freq_c)
-    
     #Convert attbnd to python list
     # Extract data from modified absatm object
     attbnd_list = dummy
@@ -1408,7 +1352,6 @@ def NMSim_atmospheric_absorption(nmsim_dll, temp, rh, freq, nfreq, max_dist):
     # When calling the dll, floats and integers must be passed by reference. Everything else is a simple pass.
     # this changes absatm by list reference
     nmsim.SETATM(absatm, freq_c, ctypes.byref(nfreq_c), ctypes.byref(temp_c), ctypes.byref(rh_c))
-    
     # Extract data (dB/m) from modified absatm object
     absatm_list = [0] * nfreq
     for i in range(0,nfreq):

@@ -32,7 +32,6 @@ $("#run_model").click(function() {
   let formData = new FormData();
   formData.append('temp', $("#temperature")[0].value);
   formData.append('humidity', $("#humidity")[0].value);
-  formData.append("ambient_vol",$("#ambient")[0].value);
   formData.append("out_weighting",$("#out_weighting")[0].value);
   formData.append("vehicle",$("#vehicle_type")[0].value);
   formData.append("sound_src",$("#vehicle_model")[0].value);
@@ -48,12 +47,31 @@ $("#run_model").click(function() {
       log(data);
     }
 });
+latest_info();
 });
+
+function latest_info(){
+  $(function() {
+    var latest_info_interval = setInterval(function() {
+        $.get('latest_info',function(result){
+          if(result.length != 0){
+            for (var i in result) {
+              log(result[i]);
+            }
+            if(result[0] == ""){
+              clearInterval(latest_info_interval);
+              log("Simulation Complete.");
+            }
+          }
+        })
+    }, 3000);
+});
+}
 
 $("#elevation_input").change(function(e) {
     if(e.currentTarget.files.length == 1){
       $("#elevation_confirm")[0].innerHTML = "✔️";
-      log("Elevation file selected.");
+      log("Elevation files selected.");
     } else {
       $("#elevation_confirm")[0].innerHTML = "❌";
       log("Incorrect input for elevation file.");
@@ -62,12 +80,12 @@ $("#elevation_input").change(function(e) {
   });
 
 $("#extent_input").change(function(e) {
-  if(e.currentTarget.files.length == 1){
+  if(e.currentTarget.files.length == 4){
     $("#extent_confirm")[0].innerHTML = "✔️";
     log("Extent file selected.");
   } else {
     $("#extent_confirm")[0].innerHTML = "❌";
-    log("Incorrect input for extent file.");
+    log("4 files required for extent shape information.");
   }
   check_all_inputs();
 });
@@ -84,12 +102,13 @@ $("#land_cover_input").change(function(e) {
 });
 
 $("#point_src_input").change(function(e) {
-  if(e.currentTarget.files.length == 1){
+  if(e.currentTarget.files.length == 4){
     $("#point_src_confirm")[0].innerHTML = "✔️";
-    log("Land cover file selected.");
+    log("Point source files are selected.");
+    console.log(e.currentTarget.files);
   } else {
     $("#point_src_confirm")[0].innerHTML = "❌";
-    log("Incorrect input for land cover file.");
+    log("4 files required for point sources shape information.");
   }
   check_all_inputs();
 });
@@ -114,9 +133,15 @@ $("#submit_imports").click(function () {
 
   let formData = new FormData();
   formData.append('elevation', $("#elevation_input")[0].files[0]);
-  formData.append('extent', $("#extent_input")[0].files[0]);
+  formData.append("extent" + $("#extent_input")[0].files[0].name.slice(-4), $("#extent_input")[0].files[0]);
+  formData.append("extent" + $("#extent_input")[0].files[1].name.slice(-4), $("#extent_input")[0].files[1]);
+  formData.append("extent" + $("#extent_input")[0].files[2].name.slice(-4), $("#extent_input")[0].files[2]);
+  formData.append("extent" + $("#extent_input")[0].files[3].name.slice(-4), $("#extent_input")[0].files[3]);
   formData.append('land_cover', $("#land_cover_input")[0].files[0]);
-  formData.append('point_src', $("#point_src_input")[0].files[0]);
+  formData.append("point_src" + $("#point_src_input")[0].files[0].name.slice(-4), $("#point_src_input")[0].files[0]);
+  formData.append("point_src" + $("#point_src_input")[0].files[1].name.slice(-4), $("#point_src_input")[0].files[1]);
+  formData.append("point_src" + $("#point_src_input")[0].files[2].name.slice(-4), $("#point_src_input")[0].files[2]);
+  formData.append("point_src" + $("#point_src_input")[0].files[3].name.slice(-4), $("#point_src_input")[0].files[3]);
   formData.append('config', config_json);
   formData.append('project', $("#project_list")[0].value);
   console.log($("#project_list")[0].value);
