@@ -1,31 +1,20 @@
 //THREE JS VARIOUS REMOTE IMPORTS
-import * as THREE from 'https://cdn.skypack.dev/three@0.129.0/build/three.module.js';
+import * as THREE from './three.module.mjs';
 import { STLLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/STLLoader'
 import { OBJLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/OBJLoader'
 import { OrbitControls } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/controls/OrbitControls'
 import Stats from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/libs/stats.module.js'
 import { Vector3 } from 'https://cdn.skypack.dev/three@0.129.0/';
 // import * as fs from 'fs';
-// import { getMouseIntersect } from './raycaster.jsm'
+import { getMouseIntersect } from './raycaster.mjs'
 //GET Names of all images in folder.
 
-
-//------------PROPAGATION STUFF---------
-// var prop_images = import.meta.glob("./resources/Image/out/*.png");
-// let prop_mat_array = [];
-// // Render all images as materials.
-// for ( let image in prop_images ){
-//   console.log(image)
-//   let propagation = new THREE.TextureLoader().load(image);
-//   propagation.rotation = Math.PI;
-//   prop_mat_array.push(new THREE.MeshBasicMaterial( { map: propagation, transparent: true} )); 
-// }
 let scene;
 let camera;
 let renderer;
 let stats;
 
-function objSceneAndCamera(sat_image, project_mesh, bg_image){
+function objSceneAndCamera(sat_image, project_mesh, bg_image, prop_images){
   // SCENE, OBJECT AND CAMERA
   scene = new THREE.Scene();
   scene.add(new THREE.AxesHelper(20))
@@ -36,6 +25,14 @@ function objSceneAndCamera(sat_image, project_mesh, bg_image){
   directionalLight2.position.set(0,-1,0);
   scene.add( directionalLight );
   scene.add( directionalLight2 );
+
+  let prop_mat_array = [];
+  for ( let i in prop_images ){
+    console.log(prop_images[i])
+    let propagation = new THREE.TextureLoader().load(prop_images[i]);
+    propagation.rotation = Math.PI;
+    prop_mat_array.push(new THREE.MeshBasicMaterial( { map: propagation, transparent: true} )); 
+  }
 
   renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#bg')
@@ -53,8 +50,8 @@ function objSceneAndCamera(sat_image, project_mesh, bg_image){
   texture.rotation = Math.PI;
   const material = new THREE.MeshBasicMaterial( { map: texture } );
   //Set initial materials.
-  // let material_array = new Array(material, prop_mat_array[0]);
-  let material_array = new Array(material);
+  let material_array = new Array(material, prop_mat_array[0]);
+  // let material_array = new Array(material);
   console.log(material_array)
   // SkyBox
   const bg = new THREE.TextureLoader().load(bg_image);
@@ -114,14 +111,17 @@ function objSceneAndCamera(sat_image, project_mesh, bg_image){
   stats.domElement.style.cssText = 'position:absolute;top:0px;left:96%;';
   window.addEventListener('resize', onWindowResize, false)
   //Mouse Move Event
-  // getMouseIntersect(scene, camera);
+  getMouseIntersect(scene, camera);
   animate();
 }
 
+
 function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight
+    camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix()
-    renderer.setSize(window.innerWidth, window.innerHeight)
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    $('#bg').width = window.innerWidth;
+    $('#bg').height = window.innerHeight;
     render()
 }
 
@@ -147,12 +147,43 @@ function render() {
   renderer.render(scene, camera)
 }
 
+function getPropImages(project){
+  let formData = new FormData();
+  formData.append('project', project);
+  $.ajax({
+    type: 'POST',
+    url: '/prop_images',
+    data : formData,
+    processData: false,
+    contentType: false,
+    success: function(data) {
+      console.log(data);
+      return data;
+    }
+});
+
+}
+
 window.onload = function() {
   let project = window.location.search.substring(1).split('=')[1];
   if(project){
-    let sat_image = "./static/projects/" + project + "/satellite.jpeg"
+    let sat_image = "./static/projects/" + project + "/satelitte.jpeg"
     let mesh = "./static/projects/" + project + "/mesh.stl"
-    let bg_image = "./static/img/bg.jpg"
-    objSceneAndCamera(sat_image, mesh, bg_image);
+    let bg_image = "./static/resources/img/bg.jpg"
+    let prop_image = getPropImages(project);
+    let formData = new FormData();
+    formData.append('project', project);
+    $.ajax({
+      type: 'POST',
+      url: '/prop_images',
+      data : formData,
+      processData: false,
+      contentType: false,
+      success: function(data) {
+        console.log(data);
+        objSceneAndCamera(sat_image, mesh, bg_image, data);
+      }
+  });
+  console.log(THREE.REVISION);
   }
 }

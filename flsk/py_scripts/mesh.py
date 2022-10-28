@@ -22,4 +22,4 @@ def tif_to_csv(file):
     df.columns = ["x", "y", "value"]
     df.to_csv("samples/dem.csv", index=False)
 
-tif_to_csv("resources/TIF/IJ.tif")
+# tif_to_csv("resources/TIF/IJ.tif")

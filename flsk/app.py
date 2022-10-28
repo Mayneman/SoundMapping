@@ -3,7 +3,9 @@ from py_scripts import makeProject as mp
 from py_scripts import map_image_from_extent as satellite
 from py_scripts import phstl as mesh
 from py_scripts import D_nmsimgis as sound_modeller
+from py_scripts import imageConversion
 import subprocess
+import os
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -25,6 +27,7 @@ def import_page():
 @app.route("/viewer")
 def view_page():
     if request.method =='GET':
+        data = []
         return render_template('viewer.html')
 
 @app.route("/create", methods=['POST'])
@@ -48,14 +51,20 @@ def sources_dict():
 
 @app.route("/satellite", methods=['POST'])
 def create_satellite():
-    return satellite.doSatellite(request.form['project'])
+    satellite.doSatellite(request.form['project'])
+    proj_folder = "./static/projects/" + request.form['project']
+    number_prop = imageConversion.convertAll(proj_folder + "/out/", proj_folder + "/satelitte.jpeg", proj_folder + "/elevation.tif")
+    return "Created satellite image and " + str(number_prop) + " propagation images."
 
 @app.route("/mesh", methods=['POST'])
 def create_mesh():
-    elevation_location = "./projects/" + request.form['project'] + "/elevation.tif "
-    stl_out = "./projects/" + request.form['project'] + "/mesh.stl"
+    proj_folder = "./static/projects/" + request.form['project']
+    elevation_location = proj_folder + "/elevation.tif "
+    stl_out = proj_folder + "/mesh.stl"
     return mesh.make_mesh(elevation_location, stl_out)
 
+
+    return 
 @app.route("/run_model", methods=['POST'])
 def run_model():
     print(request.form)
@@ -83,3 +92,12 @@ def latest_info():
     copy_of_list = latest_info_list.copy()
     latest_info_list = []
     return jsonify(copy_of_list)
+
+@app.route("/prop_images", methods=['POST'])
+def prop_images():
+    prop_list = mp.list_prop_images(request.form['project'])
+    return jsonify(prop_list)
+
+@app.route("/db_value", methods=['POST'])
+def db_value():
+    return mp.dbFromCoords(request)

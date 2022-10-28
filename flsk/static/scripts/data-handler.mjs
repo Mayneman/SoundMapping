@@ -57,6 +57,7 @@ function latest_info(){
           if(result.length != 0){
             for (var i in result) {
               log(result[i]);
+              console.log(result)
             }
             if(result[0] == ""){
               clearInterval(latest_info_interval);
@@ -76,7 +77,6 @@ $("#elevation_input").change(function(e) {
       $("#elevation_confirm")[0].innerHTML = "❌";
       log("Incorrect input for elevation file.");
     }
-    check_all_inputs();
   });
 
 $("#extent_input").change(function(e) {
@@ -87,7 +87,6 @@ $("#extent_input").change(function(e) {
     $("#extent_confirm")[0].innerHTML = "❌";
     log("4 files required for extent shape information.");
   }
-  check_all_inputs();
 });
 
 $("#land_cover_input").change(function(e) {
@@ -98,7 +97,6 @@ $("#land_cover_input").change(function(e) {
     $("#land_cover_confirm")[0].innerHTML = "❌";
     log("Incorrect input for land cover file.");
   }
-  check_all_inputs();
 });
 
 $("#point_src_input").change(function(e) {
@@ -110,39 +108,31 @@ $("#point_src_input").change(function(e) {
     $("#point_src_confirm")[0].innerHTML = "❌";
     log("4 files required for point sources shape information.");
   }
-  check_all_inputs();
 });
-
-
-function check_all_inputs(){
-  if($("#land_cover_confirm")[0].innerHTML == "✔️" & $("#extent_confirm")[0].innerHTML == "✔️" & $("#elevation_confirm")[0].innerHTML == "✔️" & $("#point_src_confirm")[0].innerHTML == "✔️"){
-    $('#submit_imports').prop('disabled',false);
-  } else {
-    $('#submit_imports').prop('disabled',true);
-  }
-}
 
 // Get all import information and send it to a json in temp folder.
 $("#submit_imports").click(function () {
-  let config_json = {}
-  config_json["temp"] = $("#temperature")[0].value;
-  config_json["humidity"] = $("#humidity")[0].value;
-  config_json["ambient_vol"] = $("#ambient")[0].value;
-  config_json["out_weighting"] = $("#out_weighting")[0].value;
-  config_json["sound_src"] = $("#vehicle_model")[0].value;
 
   let formData = new FormData();
-  formData.append('elevation', $("#elevation_input")[0].files[0]);
-  formData.append("extent" + $("#extent_input")[0].files[0].name.slice(-4), $("#extent_input")[0].files[0]);
-  formData.append("extent" + $("#extent_input")[0].files[1].name.slice(-4), $("#extent_input")[0].files[1]);
-  formData.append("extent" + $("#extent_input")[0].files[2].name.slice(-4), $("#extent_input")[0].files[2]);
-  formData.append("extent" + $("#extent_input")[0].files[3].name.slice(-4), $("#extent_input")[0].files[3]);
-  formData.append('land_cover', $("#land_cover_input")[0].files[0]);
-  formData.append("point_src" + $("#point_src_input")[0].files[0].name.slice(-4), $("#point_src_input")[0].files[0]);
-  formData.append("point_src" + $("#point_src_input")[0].files[1].name.slice(-4), $("#point_src_input")[0].files[1]);
-  formData.append("point_src" + $("#point_src_input")[0].files[2].name.slice(-4), $("#point_src_input")[0].files[2]);
-  formData.append("point_src" + $("#point_src_input")[0].files[3].name.slice(-4), $("#point_src_input")[0].files[3]);
-  formData.append('config', config_json);
+  if($("#elevation_input")[0].files.length == 1){
+    formData.append('elevation', $("#elevation_input")[0].files[0]);
+  }
+  if($("#land_cover_input")[0].files.length == 1){
+    formData.append('land_cover', $("#land_cover_input")[0].files[0]);
+  }
+  if($("#extent_input")[0].files.length == 4){
+    formData.append("extent" + $("#extent_input")[0].files[0].name.slice(-4), $("#extent_input")[0].files[0]);
+    formData.append("extent" + $("#extent_input")[0].files[1].name.slice(-4), $("#extent_input")[0].files[1]);
+    formData.append("extent" + $("#extent_input")[0].files[2].name.slice(-4), $("#extent_input")[0].files[2]);
+    formData.append("extent" + $("#extent_input")[0].files[3].name.slice(-4), $("#extent_input")[0].files[3]);
+  }
+
+  if($("#point_src_input")[0].files.length == 4){
+    formData.append("point_src" + $("#point_src_input")[0].files[0].name.slice(-4), $("#point_src_input")[0].files[0]);
+    formData.append("point_src" + $("#point_src_input")[0].files[1].name.slice(-4), $("#point_src_input")[0].files[1]);
+    formData.append("point_src" + $("#point_src_input")[0].files[2].name.slice(-4), $("#point_src_input")[0].files[2]);
+    formData.append("point_src" + $("#point_src_input")[0].files[3].name.slice(-4), $("#point_src_input")[0].files[3]);
+  }
   formData.append('project', $("#project_list")[0].value);
   console.log($("#project_list")[0].value);
 
