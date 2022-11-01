@@ -3,4 +3,6 @@ flsk/venv
 **/node_modules
 flsk/app.bat
 flsk/projects
-**/projects
+projects/
+*.stl
+flsk/static/projects/first/mesh.stl

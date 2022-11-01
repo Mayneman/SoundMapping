@@ -1,5 +1,5 @@
 import os, sys
-from PIL import Image
+from PIL import Image, ImageOps
 import json
 from osgeo import gdal
 from osgeo.gdalconst import GA_ReadOnly
@@ -13,9 +13,8 @@ def tiffToPNG(in_dir):
         if infile[-3:] == "tif" or infile[-3:] == "bmp" :
             count += 1
             outfile = infile[:-3] + "png"
-            im = Image.open(in_dir + "/" + infile)
-            out = im.convert("RGB")
-            out.save(in_dir + "/" + outfile, "PNG", quality=90)
+            im = Image.open(in_dir + "/" + infile).convert("L")
+            im.save(in_dir + "/" + outfile, "PNG", quality=90)
     return count
 
 def getExtentAndCoordniateSystem(file):
@@ -91,3 +90,9 @@ def convertAll(in_dir, satelitte, elevation):
     batchTransform(in_dir, satelitte, elevation)
     return count
 
+def colorize_test():
+    in_img = Image.open("G:\\_PROJECTS\\_University\\_SMP\\flsk\\static\\projects\\first\\out\\point_src_A_pt0.tif").convert("L")
+    img1 = ImageOps.colorize(in_img, black="green", white ="red")
+    img1.show()
+
+# colorize_test()

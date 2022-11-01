@@ -1,0 +1,15 @@
+.parent {
+    display: grid;
+    grid-template-columns: 1fr 4fr;
+    grid-template-rows: 1fr;
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    }
+    
+h2, h3 {
+    margin-left: 5px;
+}
+
+h5, input, span {
+    margin-left: 15px;
+}

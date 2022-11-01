@@ -76,17 +76,10 @@ def dbFromCoords(request):
     file_name = "./static/projects/first/out/point_src_A_pt0.tif"
     latitude = float(request.form['lat'])
     longitude = float(request.form['lon'])
-
-    # ds = gdal.Open(file_name, 0)
-    # arr = ds.ReadAsArray()
-    # xmin, xres, xskew, ymax, yskew, yres = ds.GetGeoTransform()
-    # del ds
-    # i = floor((latitude) / -yres).astype('int')
-    # j = floor((longitude) / xres).astype('int')
-    # print(i)
-    # print(j)
-    # # calculate indices and index array
-    # values = arr[i,j]
     result = os.popen('gdallocationinfo -b 1 -valonly -wgs84 %s %s %s' % (file_name, latitude, longitude))
-
-    return result.read()
+    read_result = result.read()
+    try:
+        float(read_result)
+        return read_result
+    except ValueError:
+        return "No Data"

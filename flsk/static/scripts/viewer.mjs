@@ -6,27 +6,25 @@ import { OrbitControls } from 'https://cdn.skypack.dev/three@0.129.0/examples/js
 import Stats from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/libs/stats.module.js'
 import { Vector3 } from 'https://cdn.skypack.dev/three@0.129.0/';
 // import * as fs from 'fs';
-import { getMouseIntersect } from './raycaster.mjs'
 //GET Names of all images in folder.
 
 let scene;
 let camera;
 let renderer;
 let stats;
+let prop_images = [];
+let prop_mat_array;
 
 function objSceneAndCamera(sat_image, project_mesh, bg_image, prop_images){
   // SCENE, OBJECT AND CAMERA
   scene = new THREE.Scene();
   scene.add(new THREE.AxesHelper(20))
-  camera = new THREE.PerspectiveCamera(75, window.innerHeight / window.innerHeight, 0.1, 1000);
+  camera = new THREE.PerspectiveCamera(75, (window.innerWidth) / window.innerHeight, 0.1, 1000);
 
   const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.75 );
-  const directionalLight2 = new THREE.DirectionalLight( 0xffffff, 0.75 );
-  directionalLight2.position.set(0,-1,0);
   scene.add( directionalLight );
-  scene.add( directionalLight2 );
 
-  let prop_mat_array = [];
+  prop_mat_array = [];
   for ( let i in prop_images ){
     console.log(prop_images[i])
     let propagation = new THREE.TextureLoader().load(prop_images[i]);
@@ -108,16 +106,20 @@ function objSceneAndCamera(sat_image, project_mesh, bg_image, prop_images){
 
   stats = Stats()
   document.body.appendChild(stats.dom)
-  stats.domElement.style.cssText = 'position:absolute;top:0px;left:96%;';
+  stats.domElement.style.cssText = 'position:absolute;top:14px;left:95%;';
   window.addEventListener('resize', onWindowResize, false)
   //Mouse Move Event
-  getMouseIntersect(scene, camera);
+  let items = getMouseIntersect(scene, camera);
+  console.log(items);
+  if(items != null){
+    
+  }
   animate();
 }
 
 
 function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = (window.innerWidth) / window.innerHeight;
     camera.updateProjectionMatrix()
     renderer.setSize(window.innerWidth, window.innerHeight);
     $('#bg').width = window.innerWidth;
@@ -127,16 +129,15 @@ function onWindowResize() {
 
 function animate() {
   //Property changes checked per frame.
-  // if (scene.children[3]) {
-  //   scene.children[3].material[1].opacity = document.getElementById("propagationTransparency").value;
-  //   // If different material.
-  //   let current_img_value = document.getElementById("imageNo").value;
-  //   if(scene.children[3].material[1].map.source.uuid != prop_mat_array[current_img_value-1].map.source.uuid){
-  //     console.log(prop_mat_array[current_img_value-1].map.source.uuid)
-  //     scene.children[3].material[1] = prop_mat_array[current_img_value-1];
-
-  //   }
-  // }
+  let mesh = getMeshFromScene(scene);
+  if(mesh != undefined){
+    mesh.material[1].opacity = $("#propagationTransparency")[0].value;
+  }
+  let current_img_value = document.getElementById("imageNo").value;
+  //TODO
+  if(prop_images.length > 0 & mesh != undefined){
+    mesh.material[1] = prop_mat_array[$("#imageNo")[0].value - 1];
+  }
   requestAnimationFrame(animate);
   render();
 
@@ -156,12 +157,83 @@ function getPropImages(project){
     data : formData,
     processData: false,
     contentType: false,
+    async: false,
     success: function(data) {
       console.log(data);
+      prop_images = data;
+      $("#imageNo")[0].max = data.length;
       return data;
     }
 });
+}
 
+function getMouseIntersect(scene, camera, width_offset){
+  const pointer = new THREE.Vector2();
+  const raycaster = new THREE.Raycaster();
+  const onMouseClick = (event) => {
+      pointer.x = ((event.clientX) / window.innerWidth) * 2 - 1;
+      pointer.y = - ((event.clientY) / window.innerHeight) * 2 + 1;
+      let mesh = getMeshFromScene(scene);
+      raycaster.setFromCamera(pointer, camera)
+      const intersects = raycaster.intersectObject(mesh);
+      if(intersects.length > 0){
+          uvToLatLon(intersects[0].uv.x, intersects[0].uv.y);
+          console.log($('#lat_input'))
+      }
+  }
+
+  addEventListener('click', onMouseClick)
+}
+
+//TODO: Make this more efficient. Currently looks for mesh every frame.
+function getMeshFromScene(scene){
+  for(let object in scene.children){
+      if(scene.children[object].type == 'Mesh'){
+          return scene.children[object];
+      }
+  }
+}
+$('#latLonToDB').click(function() {
+  let formData = new FormData();
+  formData.append('lat', $('#lat_input')[0].value);
+  formData.append('lon', $('#lon_input')[0].value);
+  $.ajax({
+    type: 'POST',
+    url: '/db_value',
+    data : formData,
+    processData: false,
+    contentType: false,
+    success: function(data) {
+      console.log(data);
+      $('#decibel_value')[0].innerHTML = data
+    }
+});
+});
+
+function uvToLatLon(u, v){
+  // u is lat, v is lon
+  //max-min * (1 + u) + min
+  //TODO: REPLACE THESE WITH ACTUAL VALUES
+  let lat = [173.9252829,  174.1873358]
+  let lon = [-39.3977755, -39.1703491]
+  let point_lat = (lat[1]-lat[0])*(1+u) + lat[0]
+  let point_lon = (lon[1]-lon[0])*(1+v) + lon[0]
+  let formData = new FormData();
+  formData.append('lat', point_lat);
+  formData.append('lon', point_lon);
+  $('#lat_input')[0].value = point_lat;
+  $('#lon_input')[0].value = point_lon;
+  $.ajax({
+    type: 'POST',
+    url: '/db_value',
+    data : formData,
+    processData: false,
+    contentType: false,
+    success: function(data) {
+      console.log(data);
+      $('#decibel_value')[0].innerHTML = data
+    }
+});
 }
 
 window.onload = function() {
@@ -170,7 +242,6 @@ window.onload = function() {
     let sat_image = "./static/projects/" + project + "/satelitte.jpeg"
     let mesh = "./static/projects/" + project + "/mesh.stl"
     let bg_image = "./static/resources/img/bg.jpg"
-    let prop_image = getPropImages(project);
     let formData = new FormData();
     formData.append('project', project);
     $.ajax({
@@ -179,8 +250,10 @@ window.onload = function() {
       data : formData,
       processData: false,
       contentType: false,
+      async: false,
       success: function(data) {
         console.log(data);
+        getPropImages(project);
         objSceneAndCamera(sat_image, mesh, bg_image, data);
       }
   });
