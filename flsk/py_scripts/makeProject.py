@@ -1,12 +1,5 @@
-import json
 import os
 from pathlib import Path
-from pyrsistent import v
-import requests
-from osgeo import gdal,ogr
-from numpy import floor
-from osgeo_utils.samples import gdallocationinfo
-import struct
 base_proj_dir = "./static/projects/"
 
 def make_proj(data):

@@ -101,3 +101,6 @@ def prop_images():
 @app.route("/db_value", methods=['POST'])
 def db_value():
     return mp.dbFromCoords(request)
+
+
+app.run()

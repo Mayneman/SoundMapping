@@ -14,8 +14,17 @@ def tiffToPNG(in_dir):
             count += 1
             outfile = infile[:-3] + "png"
             im = Image.open(in_dir + "/" + infile).convert("L")
+            im.putdata(stretchRange(list(im.getdata())))
             im.save(in_dir + "/" + outfile, "PNG", quality=90)
     return count
+
+def stretchRange(image_data):
+    max_gs = max(image_data)
+    scale_factor = 255/max_gs;
+    new_data = []
+    for i in image_data:
+        new_data.append(round(i*scale_factor))
+    return new_data
 
 def getExtentAndCoordniateSystem(file):
     data = gdal.Open(file, GA_ReadOnly)

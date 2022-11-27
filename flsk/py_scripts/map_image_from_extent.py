@@ -1,12 +1,9 @@
 # Open Street Map API
-import json
-import requests
-import numpy
-from osgeo import gdal
-from osgeo.gdalconst import GA_ReadOnly
-from osgeo import ogr, osr
-import logging
 from PIL import Image
+from osgeo import gdal
+from osgeo import ogr, osr
+from osgeo.gdalconst import GA_ReadOnly
+
 import urllib.request
 
 
