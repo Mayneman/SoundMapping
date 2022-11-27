@@ -5,4 +5,7 @@ flsk/app.bat
 flsk/projects
 projects/
 *.stl
+**/my_env
+*.tar.gz
+**/mesh.stl
 flsk/static/projects/first/mesh.stl
