@@ -1,6 +1,9 @@
-Hello, this is my masters project which makes a model of aircraft noise. :)
+Hello, this is my masters project which uses the NMSIM sound propagation model and a couple APIs and tools to create a 4D model of a vehicles travel path.
 
-Also a list of python libs for later:
- - gdal (need .whl binaries from https://www.lfd.uci.edu/~gohlke/pythonlibs/) 
- - python -m pip install numpy
- - flask
+Steps to making this project work:
+
+ - Download Code Base
+ - Make sure you have Conda >= 4.13.0 installed
+ - Run the setup.bat file
+ - Run the run.bat file
+ - Read the user guide.
