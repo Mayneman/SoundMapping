@@ -7,8 +7,8 @@ from osgeo.gdalconst import GA_ReadOnly
 import urllib.request
 
 
-token = ""
-user = ''
+token = "pk.eyJ1IjoibGV3aXNkdyIsImEiOiJjbGIwMXY3OXIxZXk5M29wNTlkZzZzZzRxIn0.2Pm3dHIzEaJikIGwlooSTw"
+user = 'lewisdw'
 style_id = 'cl568hnk0006v15sb6fnwux7m'
 
 

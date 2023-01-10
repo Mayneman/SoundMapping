@@ -27,7 +27,6 @@ def import_page():
 @app.route("/viewer")
 def view_page():
     if request.method =='GET':
-        data = []
         return render_template('viewer.html')
 
 @app.route("/create", methods=['POST'])
@@ -63,8 +62,6 @@ def create_mesh():
     stl_out = proj_folder + "/mesh.stl"
     return mesh.make_mesh(elevation_location, stl_out)
 
-
-    return 
 @app.route("/run_model", methods=['POST'])
 def run_model():
     print(request.form)

@@ -1,7 +1,6 @@
 flsk/venv
 **/__pycache__
 **/node_modules
-flsk/app.bat
 flsk/projects
 projects/
 *.stl

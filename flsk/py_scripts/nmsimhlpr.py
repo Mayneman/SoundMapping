@@ -2,7 +2,7 @@
 """
 Description: Provides NMSim support to soundprophlpr.py
 
-Dependencies: ArcGIS >=10.3, Python 2.7, soundprophlpr.py, nmsimgis_analysis.py
+Dependencies: ArcGIS >=10.3, Python 3.9, soundprophlpr.py, nmsimgis_analysis.py
               NumPy
 
 @author Alexander "Sasha" Keyel <skeyel@gmail.com> and Bruce Ikelheimer
