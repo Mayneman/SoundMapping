@@ -14,7 +14,7 @@ let renderer;
 let stats;
 let prop_images = [];
 let prop_mat_array;
-
+let running_animation = false;
 function objSceneAndCamera(sat_image, project_mesh, bg_image, prop_images){
   // SCENE, OBJECT AND CAMERA
   scene = new THREE.Scene();
@@ -208,6 +208,25 @@ $('#latLonToDB').click(function() {
       $('#decibel_value')[0].innerHTML = data
     }
 });
+});
+
+function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
+$('#runAnimation').click(async function() {
+  running_animation = !running_animation;
+  while(running_animation){
+    let image_num = document.getElementById("imageNo");
+    await delay(1000);
+    if(image_num.max <= image_num.value){
+      image_num.value = 1;
+    } else {
+      console.log(image_num.value + 1);
+      //Increment string number by 1
+      image_num.value = +image_num.value + 1;
+    }
+  }
 });
 
 function uvToLatLon(u, v){
