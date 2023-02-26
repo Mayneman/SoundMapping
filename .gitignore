@@ -4,7 +4,7 @@ flsk/venv
 flsk/projects
 projects/
 *.stl
-**/my_env
+**/my_env/*
 *.tar.gz
 **/mesh.stl
 flsk/static/projects/first/mesh.stl
