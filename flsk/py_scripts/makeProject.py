@@ -66,7 +66,7 @@ def list_prop_images(project):
     return prop_list 
 
 def dbFromCoords(request):
-    file_name = "./static/projects/first/out/point_src_A_pt0.tif"
+    file_name = "./static/projects/" + request.form['project'] + "/out/point_src_A_pt0.tif"
     latitude = float(request.form['lat'])
     longitude = float(request.form['lon'])
     result = os.popen('gdallocationinfo -b 1 -valonly -wgs84 %s %s %s' % (file_name, latitude, longitude))
