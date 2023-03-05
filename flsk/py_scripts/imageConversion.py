@@ -8,14 +8,18 @@ import glob
 from pathlib import Path
 
 def tiffToPNG(in_dir):
+    in_n_out = in_dir + "/nmsimgis/"
     count = 0
-    for infile in os.listdir(in_dir):
+    # Iterate all propagation images
+    for infile in os.listdir(in_n_out):
         if infile[-3:] == "tif" or infile[-3:] == "bmp" :
-            count += 1
-            outfile = infile[:-3] + "png"
-            im = Image.open(in_dir + "/" + infile).convert("L")
-            im.putdata(stretchRange(list(im.getdata())))
-            im.save(in_dir + "/" + outfile, "PNG", quality=90)
+            if infile.startswith("point_src"):
+                count += 1
+                outfile = infile[:-3] + "png"
+                print(in_dir + "/" + infile)
+                im = Image.open(in_n_out + infile).convert("L")
+                im.putdata(stretchRange(list(im.getdata())))
+                im.save(in_n_out + outfile, "PNG", quality=90)
     return count
 
 def stretchRange(image_data):
@@ -42,10 +46,11 @@ def getExtentAndCoordniateSystem(file):
 # 
 def applyTransparentBorders(image, background, image_extent, main_extent, out_folder):
     im = Image.open(image)
+    print("open")
     im.putalpha(255)
     width, height = im.size
     im_bg = Image.open(background)
-
+    print("open bg")
     main_extent = getExtentAndCoordniateSystem(main_extent)
     img_extent = getExtentAndCoordniateSystem(image_extent)
     x_len = main_extent[1][0] - main_extent[0][0]
@@ -75,31 +80,40 @@ def applyTransparentBorders(image, background, image_extent, main_extent, out_fo
 
     total_X = added_pixels_left + added_pixels_right + width
     total_Y = added_pixels_top + added_pixels_bot + height
-
     # Create new image with correct sizing place old image at particular x,y value.
     new_im = Image.new('RGBA', (total_X, total_Y))
-    new_im.paste(im, (added_pixels_left, added_pixels_top), im)
+    print("new_im")
+    new_im.paste(im, (added_pixels_left, added_pixels_top))
+    print("paste")
     out = new_im.rotate(180)
     out.save(out_folder)
+    print("saved")
+
 
 
 # Takes all .png files in a folder and gives transparent background the same size as a reference img (background) saves to local 'processed' folder. 
-def batchTransform(folder_in, background, background_extent):
-    images = glob.glob(folder_in + "\*.png")
-    Path(folder_in + "/out").mkdir(parents=True, exist_ok=True)
+def batchTransform(proj_dir):
+    images = glob.glob(proj_dir + "/nmsimgis/point_src*.png")
+    if not os.path.exists(proj_dir + "/out/"):
+        os.makedirs(proj_dir + "/out/")
     for image in images:
         try:
             image_extent = image[0:-4] + ".tif"
-            applyTransparentBorders(image, background, image_extent, background_extent, folder_in + os.path.basename(image))
+            print("image: " + image)
+            print("satelitte: " + proj_dir + "/satelitte.jpeg")
+            print("image_extent: " + image_extent)
+            print("elevation: " +  proj_dir +  "/elevation.tif")
+            print("basename: " + proj_dir + os.path.basename(image))
+            applyTransparentBorders(image, proj_dir + "/satelitte.jpeg", image_extent, proj_dir +  "/elevation.tif" , proj_dir + "/out/" + os.path.basename(image))
         except Exception as e:
             print(e)
         
-def convertAll(in_dir, satelitte, elevation):
+def convertAll(in_dir):
     # Create out if doesnt exist
     if not os.path.exists(in_dir):
         os.makedirs(in_dir)
     count = tiffToPNG(in_dir)
-    batchTransform(in_dir, satelitte, elevation)
+    batchTransform(in_dir)
     return count
 
 def colorize_test():

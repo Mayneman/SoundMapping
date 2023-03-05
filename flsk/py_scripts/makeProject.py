@@ -25,6 +25,7 @@ def make_proj(data):
         except OSError:
             pass
         data.files['land_cover'].save(project_dir + "/land_cover.tif")
+        data.files['land_cover_dbf'].save(project_dir + "/land_cover.tif.vat.dbf")
     # POINT SOURCES
     if 'point_src.shp' in data.files:
         data.files['point_src.shp'].save(project_dir + "/point_src.shp")

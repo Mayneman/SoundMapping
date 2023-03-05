@@ -90,7 +90,7 @@ $("#extent_input").change(function(e) {
 });
 
 $("#land_cover_input").change(function(e) {
-  if(e.currentTarget.files.length == 1){
+  if(e.currentTarget.files.length == 2){
     $("#land_cover_confirm")[0].innerHTML = "✔️";
     log("Land cover file selected.");
   } else {
@@ -117,8 +117,9 @@ $("#submit_imports").click(function () {
   if($("#elevation_input")[0].files.length == 1){
     formData.append('elevation', $("#elevation_input")[0].files[0]);
   }
-  if($("#land_cover_input")[0].files.length == 1){
+  if($("#land_cover_input")[0].files.length == 2){
     formData.append('land_cover', $("#land_cover_input")[0].files[0]);
+    formData.append('land_cover_dbf', $("#land_cover_input")[0].files[1]);
   }
   if($("#extent_input")[0].files.length == 4){
     formData.append("extent" + $("#extent_input")[0].files[0].name.slice(-4), $("#extent_input")[0].files[0]);

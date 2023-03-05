@@ -52,7 +52,7 @@ def sources_dict():
 def create_satellite():
     satellite.doSatellite(request.form['project'])
     proj_folder = "./static/projects/" + request.form['project']
-    number_prop = imageConversion.convertAll(proj_folder + "/out/", proj_folder + "/satelitte.jpeg", proj_folder + "/elevation.tif")
+    number_prop = imageConversion.convertAll(proj_folder)
     return "Created satellite image and " + str(number_prop) + " propagation images."
 
 @app.route("/mesh", methods=['POST'])
