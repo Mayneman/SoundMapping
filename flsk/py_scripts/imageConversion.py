@@ -95,6 +95,9 @@ def batchTransform(folder_in, background, background_extent):
             print(e)
         
 def convertAll(in_dir, satelitte, elevation):
+    # Create out if doesnt exist
+    if not os.path.exists(in_dir):
+        os.makedirs(in_dir)
     count = tiffToPNG(in_dir)
     batchTransform(in_dir, satelitte, elevation)
     return count
